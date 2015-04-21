@@ -1,0 +1,18 @@
+---
+language: python
+python: "2.7"
+
+env:
+  - SITE=test.yml
+
+install:
+  - pip install ansible
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+
+script:
+  - "ansible-playbook -i tests/inventory tests/$SITE --syntax-check"
+  - "ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo"
+  - >
+    ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
+    | grep -q 'failed=0'
+    && (echo 'PASS' && exit 0) || (echo 'FAIL' && exit 1)
