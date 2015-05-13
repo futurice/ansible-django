@@ -5,6 +5,7 @@ using_sqlite: false
 
 app_name: foobar
 repo: https://github.com/futurice/django-skeleton.git
+git_branch: 'master'
 user: www-data
 django_settings: "skeleton.settings"
 

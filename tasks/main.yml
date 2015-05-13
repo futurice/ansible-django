@@ -12,12 +12,20 @@
 
 - name: Pull repository sources using RSA keys from deploying users own SSH config
   git: repo={{repo}} dest={{release_path}} version=master accept_hostkey=yes
+  when: repo != '.'
+- name: Using local repository as source for deployment
+  local_action: command git archive -o _deploy.tgz --format=tar {{git_branch}}
+  when: repo == '.'
+- unarchive: src=_deploy.tgz dest={{release_path}}
+  when: repo == '.'
+- local_action: command rm _deploy.tgz
+  when: repo == '.'
 
 - command: cp -f /root/{{ app_name }}_local_settings.py {{release_path}}local_settings.py
   ignore_errors: yes
 
 - pip: name=virtualenv
-- pip: requirements="{{release_path}}requirements.txt" virtualenv="{{ virtualenv_path }}"
+- pip: requirements="{{release_path}}requirements.txt" virtualenv="{{virtualenv_path}}"
   register: pip_result
   ignore_errors: True
 
