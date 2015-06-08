@@ -1,2 +1,18 @@
 ---
-dependencies: []
+galaxy_info:
+  author: Jussi Vaihia
+  description: Django project deployment
+  company: Futurice
+  license: BSD
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  categories:
+    - web
+dependencies: ['futurice.pip']
+  

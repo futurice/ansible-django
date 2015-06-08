@@ -7,8 +7,8 @@ env:
 
 install:
   - pip install ansible
+  - ansible-galaxy install futurice.pip --roles-path=../ --ignore-errors
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-  - git clone https://github.com/futurice/ansible-pip.git ../ansible-pip
 
 script:
   - "ansible-playbook -i tests/inventory tests/$SITE --syntax-check"
