@@ -7,7 +7,7 @@ env:
 
 install:
   - pip install ansible
-  - ansible-galaxy install futurice.pip --roles-path=../ --ignore-errors
+  - ansible-galaxy install futurice.django --roles-path=../ --ignore-errors
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
 script:
