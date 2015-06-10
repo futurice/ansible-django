@@ -9,11 +9,9 @@ Role Variables
 --------------
 ```yaml
 ---
-app_name: foobar
-repo: https://github.com/futurice/django-skeleton.git
-git_branch: 'master'
-user: www-data
+release_name: skeleton
 django_settings: "skeleton.settings"
+git_repo: https://github.com/futurice/django-skeleton.git
 ```
 
 
@@ -25,8 +23,7 @@ Dependencies
 
 Example Playbook
 ----------------
-
-    - hosts: servers
+    - hosts: all
       roles:
          - futurice.django
 
