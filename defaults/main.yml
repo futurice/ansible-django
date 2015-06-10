@@ -3,11 +3,13 @@ using_apache: false
 using_supervisor: false
 using_sqlite: false
 
-app_name: foobar
-repo: https://github.com/futurice/django-skeleton.git
-git_branch: 'master'
-user: www-data
+release_name: foobar
+
 django_settings: "skeleton.settings"
+django_user: www-data
+django_group: "{{django_user}}"
+
+git_repo: https://github.com/futurice/django-skeleton.git
 
 apt_packages:
   - git

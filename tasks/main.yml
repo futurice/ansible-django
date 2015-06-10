@@ -1,41 +1,34 @@
 ---
-- file: state=directory owner={{ user }} group={{ user }} recurse=yes path="{{ project_path }}shared/log"
-- file: state=directory owner={{ user }} group={{ user }} recurse=yes path="{{ project_path }}shared/pids"
-- file: state=directory owner={{ user }} group={{ user }} recurse=yes path="{{ project_path }}media"
-- file: state=directory owner={{ user }} group={{ user }} recurse=yes path={{ release_path }}
+- file: state=directory owner={{ django_user }} group={{ django_group }} recurse=yes path="{{ release_root }}shared/log"
+- file: state=directory owner={{ django_user }} group={{ django_group }} recurse=yes path="{{ release_root }}shared/pids"
+- file: state=directory owner={{ django_user }} group={{ django_group }} recurse=yes path="{{ release_root }}media"
+- file: state=directory owner={{ django_user }} group={{ django_group }} recurse=yes path={{ release_root }}
 
-- file: path={{project_path}}lite.db owner={{ user }} group={{ user }} mode=0644
+- file: path={{release_root}}lite.db owner={{ django_user }} group={{ django_group }} mode=0644
   when: using_sqlite
 
 - action: apt pkg={{item}} state=installed
   with_items: apt_packages
 
-- name: Pull repository sources using RSA keys from deploying users own SSH config
-  git: repo={{repo}} dest={{release_path}} version=master accept_hostkey=yes
-  when: repo != '.'
-- name: Using local repository as source for deployment
-  local_action: command git archive -o _deploy.tgz --format=tar {{git_branch}}
-  when: repo == '.'
-- unarchive: src=_deploy.tgz dest={{release_path}}
-  when: repo == '.'
-- local_action: command rm _deploy.tgz
-  when: repo == '.'
+- name: Git Deploy
+  when: git_repo
+  include: ../../futurice.release/tasks/git_deploy.yml
 
-- command: cp -f /root/{{ app_name }}_local_settings.py {{release_path}}local_settings.py
+- command: cp -f /root/{{ release_name }}_local_settings.py {{release_path}}local_settings.py
   ignore_errors: yes
 
 - pip: name=virtualenv
-- pip: requirements="{{release_path}}requirements.txt" virtualenv="{{virtualenv_path}}"
+- pip: requirements="{{release_path}}requirements.txt" virtualenv="{{release_venv}}"
   register: pip_result
   ignore_errors: True
 
 - name: Install Django, when no requirements.txt provided
-  pip: name=Django virtualenv="{{virtualenv_path}}"
+  pip: name=Django virtualenv="{{release_venv}}"
   when: pip_result|failed
 
-- django_manage: command="collectstatic --noinput" app_path={{release_path}} virtualenv="{{ virtualenv_path }}" settings="{{ django_settings}}"
+- django_manage: command="collectstatic --noinput" app_path={{release_path}} virtualenv="{{ release_venv }}" settings="{{ django_settings}}"
   ignore_errors: True
-- django_manage: command="migrate --noinput" app_path={{release_path}} virtualenv="{{ virtualenv_path }}" settings="{{ django_settings}}"
+- django_manage: command="migrate --noinput" app_path={{release_path}} virtualenv="{{ release_venv }}" settings="{{ django_settings}}"
 
 - apache2_module: state=present name=wsgi
   when: using_apache
